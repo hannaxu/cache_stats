@@ -99,7 +99,7 @@ public:
 	Counter last_reads; 
 	Counter last_hits; 
 	Counter last_inserts; 
-	size_t last_bytes_written = 0; 
+	size_t last_bytes_written = 0;
 
 	/*
 	 * Want: 
@@ -110,12 +110,14 @@ public:
 	 * - warmup wa: flash bytes written, bytes inserted
 	 */
 	std::vector<size_t> segment_util;
+	std::vector<size_t> segment_open_util;
+	std::vector<size_t> segment_num_zones;
 	
 	// For WA
 	std::vector<size_t> segment_fbw; 
 	std::vector<size_t> segment_inserts; 
 
-	void collect_periodic_stats(size_t total_size) {
+	void collect_periodic_stats(size_t total_size, size_t open_size, int num_zones = -1) {
 
 		segment_inserts.push_back(counters["flash_inserts"].byte_counter - last_inserts.byte_counter); 
 		segment_fbw.push_back(flash_bytes_written - last_bytes_written); 
@@ -126,6 +128,8 @@ public:
 		write_amplification = (double)flash_bytes_written/counters["flash_inserts"].byte_counter; 
 
 		segment_util.push_back(total_size);
+		segment_open_util.push_back(open_size);
+		// segment_num_zones.push_back(num_zones);
 	}
 
 	void print_periodic_stats() {
@@ -305,6 +309,8 @@ public:
 		str += "\"segment_period\": " + std::to_string(inst_stats_period) + ",\n"; 
 
 		str += print_segment_data(segment_util, "segment_util") + ",\n"; 
+		str += print_segment_data(segment_open_util, "segment_open_util") + ",\n"; 
+		// str += print_segment_data(segment_num_zones, "segment_num_zones") + ",\n"; 
 		str += print_segment_data(segment_fbw, "segment_fbw") + ",\n"; 
 		str += print_segment_data(segment_inserts, "segment_inserts") + "\n"; 
 
