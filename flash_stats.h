@@ -117,7 +117,7 @@ public:
 	std::vector<size_t> segment_fbw; 
 	std::vector<size_t> segment_inserts; 
 
-	void collect_periodic_stats(size_t total_size, size_t open_size, int num_zones = -1) {
+	void collect_periodic_stats(size_t total_size, size_t open_size, size_t num_zones = -1) {
 
 		segment_inserts.push_back(counters["flash_inserts"].byte_counter - last_inserts.byte_counter); 
 		segment_fbw.push_back(flash_bytes_written - last_bytes_written); 
@@ -129,7 +129,7 @@ public:
 
 		segment_util.push_back(total_size);
 		segment_open_util.push_back(open_size);
-		// segment_num_zones.push_back(num_zones);
+		if (num_zones != -1) segment_num_zones.push_back(num_zones);
 	}
 
 	void print_periodic_stats() {
@@ -310,7 +310,7 @@ public:
 
 		str += print_segment_data(segment_util, "segment_util") + ",\n"; 
 		str += print_segment_data(segment_open_util, "segment_open_util") + ",\n"; 
-		// str += print_segment_data(segment_num_zones, "segment_num_zones") + ",\n"; 
+		str += print_segment_data(segment_num_zones, "segment_num_zones") + ",\n"; 
 		str += print_segment_data(segment_fbw, "segment_fbw") + ",\n"; 
 		str += print_segment_data(segment_inserts, "segment_inserts") + "\n"; 
 
